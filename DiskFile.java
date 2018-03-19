@@ -12,13 +12,14 @@ public class DiskFile extends DiskElement {
         this.id = "P";
         this.depth = depth;
         file = new File(path);
+        this.last_modified = file.lastModified();
         File[] files = file.listFiles();
         this.path = path.substring(this.file.getParent().length());
         //this.print(this.depth);
     }
 
     @Override
-    public void print_all(int depth){
+    public void print_all(int depth, int mode){
         this.print(depth);
     }
 

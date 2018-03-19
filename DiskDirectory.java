@@ -2,18 +2,18 @@ package com.jetbrains.java1;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class DiskDirectory extends DiskElement {
     Set<DiskElement> children = new TreeSet<>();
+    List<DiskElement> elements = new ArrayList<DiskElement>();
 
     public DiskDirectory(String path, int depth){
         this.id = "K";
         this.depth = depth;
 
         file = new File(path);
+        this.last_modified = file.lastModified();
         File[] files = file.listFiles();
         this.path = path.substring(this.file.getParent().length());
 
@@ -22,20 +22,30 @@ public class DiskDirectory extends DiskElement {
             if(files[i].isDirectory()) {
                 DiskDirectory child = new DiskDirectory(files[i].getAbsolutePath(), this.depth + 1);
                 children.add(child);
+                elements.add(child);
             }
             if(files[i].isFile()){
                 DiskFile child = new DiskFile(files[i].getAbsolutePath(), this.depth + 1);
                 children.add(child);
+                elements.add(child);
             }
         }
+        Collections.sort(elements, new DiskComparator());
 
     }
 
     @Override
-    public void print_all(int depth){
+    public void print_all(int depth, int mode){
         this.print(this.depth);
-        for(DiskElement item: this.children){
-            item.print_all(item.depth);
+        if(mode == 0) {
+            for (DiskElement item : this.children) {
+                item.print_all(item.depth, mode);
+            }
+        }
+        else{
+            for (DiskElement item : this.elements) {
+                item.print_all(item.depth, mode);
+            }
         }
     }
 
